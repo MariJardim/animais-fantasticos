@@ -23,7 +23,8 @@ const modal = new Modal('[data-modal="abrir"]', '[data-modal="fechar"]', '[data-
 modal.init();
 
 const tooltip = new Tooltip('[data-tooltip]')
-tooltip.init()
+tooltip.init();
+
 
 initDropdownMenu();
 initMenuMobile();
