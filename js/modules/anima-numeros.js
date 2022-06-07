@@ -1,8 +1,16 @@
-export default function initAnimaNumeros(){
-  const numeros = document.querySelectorAll('[data-numero]')
+export default class AnimaNumeros{
+  constructor(numeros, observerTarget, observerClass){
+    this.numeros = document.querySelectorAll(numeros)
+    this.observerTarget = document.querySelector(observerTarget)
+    this.observerClass = observerClass
 
-  function animaNumeros(){
-    numeros.forEach((numero)=>{
+    //bind o this do objeto ao callback da mutação
+    this.handleMutation = this.handleMutation.bind(this)
+  }
+  //recebe um elemento do dom
+  //com numero em seu texto
+  //incrementa a partir de zero até o numero final 
+  static incrementarNumero(numero){
       const total = +numero.innerText;
       let start = 0
       let incremento = Math.floor(total/100)
@@ -14,16 +22,28 @@ export default function initAnimaNumeros(){
           clearInterval(timer)
         }
       },25 * Math.random())
-    });
   }
-  function handleMutation(mutation){
-    if(mutation[0].target.classList.contains('ativo')){
-      observer.disconnect();
-      animaNumeros();
+  //Ativa incrementarNumero para cada numero selecionado no Dom
+  animaNumeros(){
+    this.numeros.forEach(numero => this.constructor.incrementarNumero(numero));
+  }
+  //Função que ocorre quando a mutação ocorrer
+  handleMutation(mutation){
+    if(mutation[0].target.classList.contains(this.observerClass)){
+      this.observer.disconnect();
+      this.animaNumeros();
     }
   }
-  const divNumeros = document.querySelector('.numeros')
-  const observer = new MutationObserver(handleMutation)
-  observer.observe(divNumeros, {attributes:true})
+  //Adiciona o mutationObserver para verificar
+  //quando a classe ativo é adicionada ao elemento target
+  addMutationObserver(){
+    this.observer = new MutationObserver(this.handleMutation)
+    this.observer.observe(this.observerTarget, {attributes:true})
+  }
+  init(){
+    if(this.numeros.length && this.observerTarget){
+    this.addMutationObserver()
+    return this;
+  }}
 }
 
